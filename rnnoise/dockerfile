@@ -1,0 +1,34 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# 安裝系統依賴
+RUN apt-get update && apt-get install -y \
+    libsndfile1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# 升級 pip 並增加超時時間
+RUN pip install --upgrade pip
+
+# 先安裝核心依賴（小檔案，快速）
+RUN pip install --no-cache-dir --timeout=1000 \
+    numpy \
+    scipy
+
+# 再安裝音訊處理相關
+RUN pip install --no-cache-dir --timeout=1000 \
+    soundfile \
+    noisereduce
+
+# 最後安裝 Web 框架
+RUN pip install --no-cache-dir --timeout=1000 \
+    fastapi \
+    uvicorn \
+    python-multipart
+
+# 複製 API 服務
+COPY app.py .
+
+EXPOSE 8001
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8001"]

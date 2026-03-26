@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# 測試音訊（檔案太大）
+test-audio/*.wav
+test-audio/*.mp3
+test-audio/*.m4a
+*.wav
+*.mp3
+*.m4a
+*.flac
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 虛擬環境
+venv/
+env/
+ENV/
+
+# 暫存檔案
+*_temp.wav
+*_降噪.wav
+
+# Docker volumes
+docker-volumes/

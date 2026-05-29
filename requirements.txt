@@ -1,0 +1,10 @@
+PyQt6
+requests
+matplotlib
+librosa
+sounddevice
+soundfile
+numpy
+qtawesome
+pesq
+pystoi

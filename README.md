@@ -18,7 +18,7 @@
 
 ## 系統需求
 
-- Docker Desktop
+- Docker Desktop（macOS / Windows）或 Docker Engine（Linux）
 - Python 3.10+
 - ffmpeg
 
@@ -26,7 +26,17 @@
 
 ## 安裝
 
-### 1. 安裝 ffmpeg
+### 1. 安裝 Docker Desktop
+
+至 https://www.docker.com/products/docker-desktop 下載並安裝，完成後啟動 Docker Desktop，確認右下角鯨魚圖示顯示為執行中狀態。
+
+**Linux** 不需要 Docker Desktop，安裝 Docker Engine 即可：
+
+```bash
+sudo apt install docker.io docker-compose-plugin
+```
+
+### 2. 安裝 ffmpeg
 
 **macOS**
 ```bash
@@ -35,20 +45,20 @@ brew install ffmpeg
 
 **Windows**
 
-至 https://ffmpeg.org/download.html 下載並加入 PATH。
+至 https://ffmpeg.org/download.html 下載，解壓縮後將 `bin/` 路徑加入系統環境變數 PATH。
 
 **Linux**
 ```bash
 sudo apt install ffmpeg
 ```
 
-### 2. 安裝 Python 套件
+### 3. 安裝 Python 套件
 
 ```bash
 pip3 install -r requirements.txt
 ```
 
-### 3. 啟動 Docker 容器
+### 4. 啟動 Docker 容器
 
 ```bash
 docker compose up -d
@@ -63,6 +73,8 @@ curl http://localhost:8001/health   # RNNoise
 curl http://localhost:8002/health   # DeepFilterNet
 curl http://localhost:8003/health   # Demucs
 ```
+
+三個都回傳 `{"status":"healthy"}` 代表啟動成功。
 
 ---
 
@@ -97,7 +109,8 @@ speech-denoiser/
 ├── evaluate.py         # 客觀指標評估腳本
 ├── evaluation_results.csv
 ├── docker-compose.yml
-└── requirements.txt
+├── requirements.txt
+└── README.md
 ```
 
 ---
@@ -146,7 +159,7 @@ AudioSR 升頻模組（16kHz → 48kHz）已完成容器化整合，基於 Diffu
 
 啟用方式（需 GPU 環境）：
 
-1. 將 `docker-compose.yml` 加入 audiosr service
+1. 在 `docker-compose.yml` 加入 audiosr service
 2. 修改 `audiosr/app.py` 中的 `device="cpu"` 為 `device="cuda"`
 3. 執行 `docker compose up -d audiosr`
 
@@ -155,7 +168,7 @@ AudioSR 升頻模組（16kHz → 48kHz）已完成容器化整合，基於 Diffu
 ## 跨平台注意事項
 
 **Windows**
-- 需啟用 WSL2
+- 需啟用 WSL2（Docker Desktop 安裝時會提示）
 - GUI 中開啟輸出檔案的指令需將 `os.system(f'open ...')` 改為 `os.system(f'start ...')`
 
 **Linux**

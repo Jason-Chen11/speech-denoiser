@@ -16,4 +16,9 @@ services:
     ports:
       - "8003:8003"
     restart: unless-stopped
-
+  
+  #audiosr:
+    #build: ./audiosr
+    #ports:
+      #- "8004:8004"
+    #restart: unless-stopped

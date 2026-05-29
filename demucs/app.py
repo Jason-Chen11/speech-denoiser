@@ -1,0 +1,88 @@
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import Response
+from demucs.apply import apply_model
+import torch
+import torchaudio
+import io
+import subprocess
+import tempfile
+import os
+
+app = FastAPI(title="Demucs Denoising Service")
+
+model = None
+
+def load_model():
+    global model
+    from demucs.pretrained import get_model
+    model = get_model("htdemucs")
+    model.eval()
+
+load_model()
+
+@app.get("/")
+def root():
+    return {
+        "service": "Demucs Denoising API",
+        "status": "running",
+        "version": "1.0.0",
+        "model": "HTDemucs"
+    }
+
+@app.get("/health")
+def health():
+    return {"status": "healthy", "model": "HTDemucs"}
+
+@app.post("/denoise")
+async def denoise(file: UploadFile = File(...)):
+    try:
+        audio_bytes = await file.read()
+
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_in:
+            tmp_in_path = tmp_in.name
+
+        with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_out:
+            tmp_out_path = tmp_out.name
+
+        try:
+            with open(tmp_in_path, 'wb') as f:
+                f.write(audio_bytes)
+
+            subprocess.run([
+                'ffmpeg', '-i', tmp_in_path,
+                '-acodec', 'pcm_s16le',
+                '-ar', '44100',
+                '-ac', '2',
+                '-y', tmp_out_path
+            ], capture_output=True, check=True)
+
+            waveform, sr = torchaudio.load(tmp_out_path, backend="soundfile")
+
+            with torch.no_grad():
+                sources = apply_model(model, waveform.unsqueeze(0))
+
+            source_names = model.sources
+            vocals_idx = source_names.index("vocals")
+            vocals = sources[0, vocals_idx]
+
+            output_io = io.BytesIO()
+            torchaudio.save(output_io, vocals, sr, format="wav")
+            output_io.seek(0)
+
+        finally:
+            os.unlink(tmp_in_path)
+            os.unlink(tmp_out_path)
+
+        return Response(
+            content=output_io.read(),
+            media_type="audio/wav",
+            headers={"Content-Disposition": "attachment; filename=denoised.wav"}
+        )
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}, 500
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8003)

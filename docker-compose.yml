@@ -1,0 +1,19 @@
+services:
+  rnnoise:
+    build: ./rnnoise
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
+  deepfilternet:
+    build: ./deepfilternet
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+
+  demucs:
+    build: ./demucs
+    ports:
+      - "8003:8003"
+    restart: unless-stopped
+

@@ -1,0 +1,28 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    libsndfile1 \
+    ffmpeg \
+    git \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    torch==2.3.0 torchaudio==2.3.0
+
+RUN pip install --no-cache-dir \
+    deepfilternet \
+    fastapi \
+    uvicorn \
+    soundfile \
+    huggingface_hub \
+    python-multipart
+
+COPY app.py .
+
+EXPOSE 8002
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8002"]

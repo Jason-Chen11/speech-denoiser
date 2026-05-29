@@ -1,0 +1,7 @@
+test_set,model,snr_before_dB,snr_improvement_dB,pesq,stoi,n_samples
+White Noise,RNNoise,9.59,-5.38,1.1176,0.6211,6
+White Noise,DeepFilterNet,9.59,2.06,1.6803,0.7316,6
+White Noise,Demucs,9.59,-0.60,1.6245,0.7283,6
+Pink Noise,RNNoise,5.01,-0.52,1.1957,0.6765,6
+Pink Noise,DeepFilterNet,5.01,4.76,2.2944,0.8414,6
+Pink Noise,Demucs,5.01,4.21,2.7554,0.8702,6

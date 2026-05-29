@@ -1,0 +1,26 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    libsndfile1 \
+    ffmpeg \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir \
+    torch==2.3.0 torchaudio==2.3.0
+
+RUN pip install --no-cache-dir \
+    demucs \
+    fastapi \
+    uvicorn \
+    python-multipart \
+    soundfile
+    
+COPY app.py .
+
+EXPOSE 8003
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8003"]
